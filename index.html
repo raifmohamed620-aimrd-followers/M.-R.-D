@@ -248,7 +248,17 @@ header #hi{animation:tagIn .8s .2s ease-out both}
 .note{color:var(--accent);font-size:.78rem;text-align:center;margin-top:18px}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
-<style id="redesign">:root,:root[data-theme="dark"],:root[data-theme="light"]{--bg:#0A0A0C;--surface:#16161A;--ink:#F5F0E6;--muted:#A79F8C;--line:#2C2A24;--page:radial-gradient(120% 50% at 50% 0%,#241C0A 0%,#0E0D0B 55%,#070708 100%);--shadow:0 8px 24px rgba(0,0,0,.5);--brand:#E3B957;--brand-ink:#14100A;--accent:#E3B957;--wa:#25D366;color-scheme:dark}header{background:linear-gradient(180deg,#000,#12100A)!important;border-bottom:1px solid #E3B95755!important;padding:10px 16px 12px!important;margin-bottom:8px!important}.logoimg{width:96px!important;max-width:40%!important}.tag{color:#E3B957;font-size:.8rem;letter-spacing:.02em}.chip{background:#16161A;border-color:#3a3321;color:#F5F0E6}.chip[aria-pressed="true"]{background:linear-gradient(135deg,#F3D27A,#C99A33);color:#14100A;border-color:#E3B957}.tile,.svc,.order{background:linear-gradient(160deg,#1B1A1F,#121215)!important;border:1px solid #3a3321!important;border-radius:18px!important;box-shadow:0 6px 18px rgba(0,0,0,.45);color:#F5F0E6!important}.tile:active,.svc:hover{border-color:#E3B957!important}.price{color:#F3D27A}.btn.main{background:linear-gradient(135deg,#F3D27A,#C99A33);color:#14100A}nav{background:#0E0D0B!important;border-top:1px solid #E3B95744!important}nav button[aria-current="page"]{color:#F3D27A}.sheet{background:#16161A!important}input,select,textarea{background:#0E0D0B!important;border-color:#3a3321!important;color:#F5F0E6!important}.sheet-bg{backdrop-filter:blur(4px)}.upd,.pulse,.hi,#hi,.welcome{background:#1B1A1F!important;color:#F5F0E6!important;border:1px solid #E3B95766!important}#hi{background:transparent!important;border:0!important}header a,header button,header .out{color:#F3D27A!important}</style></head>
+<style id="redesign">:root,:root[data-theme="dark"],:root[data-theme="light"]{--bg:#0A0A0C;--surface:#16161A;--ink:#F5F0E6;--muted:#A79F8C;--line:#2C2A24;--page:radial-gradient(120% 50% at 50% 0%,#241C0A 0%,#0E0D0B 55%,#070708 100%);--shadow:0 8px 24px rgba(0,0,0,.5);--brand:#E3B957;--brand-ink:#14100A;--accent:#E3B957;--wa:#25D366;color-scheme:dark}header{background:linear-gradient(180deg,#000,#12100A)!important;border-bottom:1px solid #E3B95755!important;padding:10px 16px 12px!important;margin-bottom:8px!important}.logoimg{width:96px!important;max-width:40%!important}.tag{color:#E3B957;font-size:.8rem;letter-spacing:.02em}.chip{background:#16161A;border-color:#3a3321;color:#F5F0E6}.chip[aria-pressed="true"]{background:linear-gradient(135deg,#F3D27A,#C99A33);color:#14100A;border-color:#E3B957}.tile,.svc,.order{background:linear-gradient(160deg,#1B1A1F,#121215)!important;border:1px solid #3a3321!important;border-radius:18px!important;box-shadow:0 6px 18px rgba(0,0,0,.45);color:#F5F0E6!important}.tile:active,.svc:hover{border-color:#E3B957!important}.price{color:#F3D27A}.btn.main{background:linear-gradient(135deg,#F3D27A,#C99A33);color:#14100A}nav{background:#0E0D0B!important;border-top:1px solid #E3B95744!important}nav button[aria-current="page"]{color:#F3D27A}.sheet{background:#16161A!important}input,select,textarea{background:#0E0D0B!important;border-color:#3a3321!important;color:#F5F0E6!important}.sheet-bg{backdrop-filter:blur(4px)}.upd,.pulse,.hi,#hi,.welcome{background:#1B1A1F!important;color:#F5F0E6!important;border:1px solid #E3B95766!important}#hi{background:transparent!important;border:0!important}header a,header button,header .out{color:#F3D27A!important}</style><style id="order-review-style">
+[hidden]{display:none!important}
+.review-details{margin:16px 0;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:0 14px}
+.review-details div{padding:10px 0;border-bottom:1px solid var(--line)}
+.review-details div:last-child{border-bottom:0}
+.review-details dt{color:var(--muted);font-size:.8rem;margin-bottom:4px}
+.review-details dd{margin:0;color:var(--ink);overflow-wrap:anywhere;white-space:pre-wrap}
+.review-details .review-total dd{color:var(--brand);font-size:1.4rem;font-weight:700}
+#reviewTitle:focus{outline:none}
+#reviewOrder{width:100%;margin-top:6px}
+</style></head>
 <body>
 <div id="app">
   <header>
@@ -290,6 +300,7 @@ header #hi{animation:tagIn .8s .2s ease-out both}
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="st">
     <h3 id="st"></h3>
     <div class="sub" id="ss"></div>
+    <div id="orderFields">
     <fieldset class="order-contact"><legend>بيانات الطلب</legend>
       <label for="oname">الاسم</label><input id="oname" type="text" autocomplete="name" maxlength="80">
       <label for="ophone">رقم الواتساب</label><input id="ophone" type="tel" inputmode="tel" dir="ltr" placeholder="01XXXXXXXXX" autocomplete="tel">
@@ -302,11 +313,19 @@ header #hi{animation:tagIn .8s .2s ease-out both}
     <input id="qty" type="number" inputmode="numeric" min="1">
     <div class="total"><span>الإجمالي</span><b id="tot"></b></div>
     <div class="err" id="err" role="alert"></div>
-    <div class="btns">
-      
-      <a class="btn wa" id="wa" target="_blank" rel="noopener">اطلب على واتساب</a>
-      <button class="btn ghost" id="close" type="button">إلغاء</button>
+    <button class="btn main" id="reviewOrder" type="button">راجع الطلب</button>
     </div>
+    <section id="orderReview" hidden aria-labelledby="reviewTitle">
+      <h3 id="reviewTitle" tabindex="-1">راجع طلبك قبل الإرسال</h3>
+      <p class="sub">اتأكد إن البيانات صح. تقدر ترجع تعدّل أي حاجة قبل ما تفتح واتساب.</p>
+      <dl id="reviewDetails" class="review-details"></dl>
+      <p class="sub">لسه مفيش طلب اتبعت. في الخطوة الجاية هيفتح واتساب برسالة جاهزة تراجعها وتبعتها بنفسك.</p>
+      <div class="btns">
+        <a class="btn wa" id="wa" target="_blank" rel="noopener noreferrer">كمّل على واتساب</a>
+        <button class="btn main" id="editOrder" type="button">تعديل البيانات</button>
+      </div>
+    </section>
+    <button class="btn ghost" id="close" type="button">إلغاء</button>
   </div>
 </div>
 
@@ -916,12 +935,42 @@ function waLink(){
   var txt="طلب جديد من M.R.D\nالاسم: "+$("oname").value.trim()+"\nرقم العميل: "+digits($("ophone").value)+"\nالمنصة: "+curP+"\nالخدمة: "+sel.n+(sel.t?"\nمدة التنفيذ: "+sel.t:"")+(sel.fix?"\n"+(sel.old?"الكمية: ":"المدة: ")+sel.u:"\nالكمية: "+q)+(sel.old?"\nعرض عجلة الحظ (بدل "+sel.old+" "+CURRENCY+")":"")+(sel.needemail?"\nالإيميل: "+$("email").value.trim():"")+(sel.nolink?"":"\nالرابط: "+$("link").value.trim())+"\nالإجمالي: "+calc()+" "+CURRENCY;
   return "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(txt);
 }
+var reviewingOrder=false;
 function upd(){
   $("tot").textContent=fmt(calc())+" "+CURRENCY;
-  $("wa").href=waLink();
+  if(reviewingOrder)$("wa").href=waLink();else $("wa").removeAttribute("href");
 }
+function editOrder(){
+  reviewingOrder=false;
+  $("orderFields").hidden=false;$("orderReview").hidden=true;
+  $("st").hidden=false;$("ss").hidden=false;upd();
+  document.querySelector(".sheet").scrollTop=0;
+}
+function reviewOrder(){
+  if(!validate())return;
+  var list=$("reviewDetails");list.textContent="";
+  function row(label,value,cls,ltr){
+    var wrap=document.createElement("div"),dt=document.createElement("dt"),dd=document.createElement("dd");
+    if(cls)wrap.className=cls;dt.textContent=label;dd.textContent=value;
+    if(ltr){dd.dir="ltr";dd.style.textAlign="start"}
+    wrap.appendChild(dt);wrap.appendChild(dd);list.appendChild(wrap);
+  }
+  row("الخدمة",curP+" - "+sel.n);
+  row(sel.fix?(sel.old?"الكمية / الباقة":"الباقة / المدة"):"الكمية",sel.fix?sel.u:fmt(parseInt($("qty").value,10)));
+  if(sel.needemail)row("إيميل التفعيل",$("email").value.trim(),"",true);
+  if(!sel.nolink)row("الرابط",$("link").value.trim(),"",true);
+  row("الاسم",$("oname").value.trim());
+  row("رقم الواتساب",digits($("ophone").value),"",true);
+  row("الإجمالي",fmt(calc())+" "+CURRENCY,"review-total");
+  reviewingOrder=true;upd();
+  $("orderFields").hidden=true;$("orderReview").hidden=false;
+  $("st").hidden=true;$("ss").hidden=true;
+  document.querySelector(".sheet").scrollTop=0;$("reviewTitle").focus();
+}
+$("reviewOrder").onclick=reviewOrder;
+$("editOrder").onclick=function(){editOrder();$("oname").focus()};
 function openSheet(s){
-  sel=s;$("st").textContent=curP+" - "+s.n;
+  sel=s;editOrder();$("st").textContent=curP+" - "+s.n;
   $("ss").textContent=s.fix?(fmt(s.p)+" "+CURRENCY+" · "+s.u):fmt(s.p)+" "+CURRENCY+" لكل 1000 · من "+fmt(s.min)+" إلى "+fmt(s.max)+(s.t?" · مدة التنفيذ: "+s.t:"");
   $("qty").value=s.min>=1000?s.min:1000>s.max?s.max:Math.max(s.min,1000);
   $("oname").value=me?me.name:guestContact.name;$("ophone").value=me?me.phone:guestContact.phone;
@@ -935,10 +984,10 @@ function closeSheet(){$("bg").classList.remove("open")}
 $("close").onclick=closeSheet;
 $("bg").onclick=function(e){if(e.target===$("bg"))closeSheet()};
 $("qty").oninput=upd;$("link").oninput=upd;$("email").oninput=upd;$("oname").oninput=upd;$("ophone").oninput=upd;
-$("wa").onclick=function(e){if(!validate()){e.preventDefault()}else{guestContact={name:$("oname").value.trim(),phone:digits($("ophone").value)};upd();var amt=calc();orders.push({p:curP,n:sel.n,q:sel.fix?1:parseInt($("qty").value,10),u:sel.fix?sel.u:"",t:amt,l:sel.needemail?$("email").value.trim():$("link").value.trim()});save();setTimeout(function(){closeSheet();celebrate("تم تجهيز طلبك. كمّل إرسال الرسالة على واتساب، وبعدها حوّل المبلغ من صفحة الدفع.",function(){showPay(amt)})},700)}};
+$("wa").onclick=function(e){if(!reviewingOrder||!validate()){e.preventDefault()}else{guestContact={name:$("oname").value.trim(),phone:digits($("ophone").value)};upd();var amt=calc();orders.push({p:curP,n:sel.n,q:sel.fix?1:parseInt($("qty").value,10),u:sel.fix?sel.u:"",t:amt,l:sel.needemail?$("email").value.trim():$("link").value.trim()});save();setTimeout(function(){closeSheet();celebrate("تم تجهيز طلبك. كمّل إرسال الرسالة على واتساب، وبعدها حوّل المبلغ من صفحة الدفع.",function(){showPay(amt)})},700)}};
 $("tabS").onclick=showServices;$("tabO").onclick=showOrders;$("tabP").onclick=function(){showPay()};$("tabI").onclick=showInfo;
 document.addEventListener("keydown",function(e){if(e.key==="Escape"){closeSheet();$("auth").style.display="none"}});
 startAuth();
 </script>
 </body>
-</html>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       </html>
