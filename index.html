@@ -9,8 +9,8 @@
 <meta property="og:site_name" content="M.R.D">
 <meta property="og:title" content="M.R.D لتزويد متابعين السوشيال">
 <meta property="og:description" content="أسعار كل المنصات في مكان واحد: متابعين ولايكات ومشاهدات على فيس بوك وتيك توك وإنستجرام وغيرهم.">
-<meta property="og:url" content="https://raifmohamed620-aimrd-followers.github.io/mrd/">
-<meta property="og:image" content="https://raifmohamed620-aimrd-followers.github.io/mrd/og.jpg">
+<meta property="og:url" content="https://raifmohamed620-aimrd-followers.github.io/M.-R.-D/">
+<meta property="og:image" content="https://raifmohamed620-aimrd-followers.github.io/M.-R.-D/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -93,7 +93,15 @@ img.bdg{display:block;object-fit:cover;background:none}
 .back{font:inherit;background:none;border:0;color:var(--accent);padding:4px 0 12px;cursor:pointer}
 .auth{position:fixed;inset:0;z-index:30;background:#000;color:#F3EEDF;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:calc(20px + env(safe-area-inset-top,0px)) 18px calc(24px + env(safe-area-inset-bottom,0px))}
 .authbox{width:100%;max-width:420px;text-align:start}
-.authbox .logoimg{margin:0 auto 14px;width:170px}
+.authbox .logoimg{position:static;display:block;flex:none;object-fit:contain;margin:0 auto 18px;width:120px;max-width:45%;height:auto;transform:none;animation:none}
+.authbox{position:relative;isolation:isolate}
+.auth .seg{clear:both;margin-bottom:14px}
+.auth-back{display:block;margin:0 0 14px;color:#F3EEDF}
+#hi{white-space:normal;text-align:center}
+#hi button{margin:0 5px}
+.order-contact{border:0;border-bottom:1px solid var(--line);padding:0 0 12px;margin:0 0 12px}
+.order-contact legend{font-weight:500}
+.sheet{max-height:90dvh;overflow-y:auto}
 .auth label{color:#A8A292}
 .auth input{background:#14130F;color:#F3EEDF;border-color:#2E2B20}
 .auth .chip{background:#14130F;color:#F3EEDF;border-color:#2E2B20;flex:1}
@@ -262,6 +270,7 @@ header #hi{animation:tagIn .8s .2s ease-out both}
 
 <div class="auth" id="auth">
   <div class="authbox">
+    <button class="out auth-back" id="browse" type="button">رجوع للخدمات والأسعار، من غير حساب</button>
     <img class="logoimg" id="alogo" alt="M.R.D">
     <div class="seg"><button class="chip" id="mIn" type="button">تسجيل دخول</button><button class="chip" id="mUp" type="button">حساب جديد</button></div>
     <label for="aname" id="nl">الاسم</label>
@@ -281,6 +290,10 @@ header #hi{animation:tagIn .8s .2s ease-out both}
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="st">
     <h3 id="st"></h3>
     <div class="sub" id="ss"></div>
+    <fieldset class="order-contact"><legend>بيانات الطلب</legend>
+      <label for="oname">الاسم</label><input id="oname" type="text" autocomplete="name" maxlength="80">
+      <label for="ophone">رقم الواتساب</label><input id="ophone" type="tel" inputmode="tel" dir="ltr" placeholder="01XXXXXXXXX" autocomplete="tel">
+    </fieldset>
     <label for="link">الرابط (حساب أو منشور أو فيديو)</label>
     <input id="link" type="url" inputmode="url" dir="ltr" placeholder="https://">
     <label for="email" id="el" style="display:none">إيميل حساب كانفا (التفعيل بيتم من خلال الإيميل فقط)</label>
@@ -388,7 +401,17 @@ var me=null,memStore={},mode="in";
 function lsGet(k){try{return localStorage.getItem(k)}catch(e){return memStore[k]||null}}
 function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){memStore[k]=v}}
 function users(){try{return JSON.parse(lsGet("mrd_users")||"[]")}catch(e){return[]}}
-function save(){if(me)lsSet("mrd_orders_"+me.phone,JSON.stringify(orders))}
+function orderKey(){return me?"mrd_orders_"+me.phone:"mrd_guest_orders"}
+function loadOrders(){try{orders=JSON.parse(lsGet(orderKey())||"[]");if(!Array.isArray(orders))orders=[]}catch(e){orders=[]}}
+function save(){lsSet(orderKey(),JSON.stringify(orders))}
+var guestContact={name:"",phone:""};
+function renderAccount(){
+  var hi=$("hi");hi.textContent=me?"أهلاً "+me.name:"تصفح الأسعار واطلب من غير حساب";
+  var b=document.createElement("button");b.className="out";b.type="button";b.textContent=me?"خروج":"دخول / حساب جديد";
+  b.onclick=me?logout:openAuth;hi.appendChild(b);
+}
+function openAuth(){closeSheet();setMode(users().length?"in":"up");$("auth").style.display="flex";$("auth").scrollTop=0}
+$("browse").onclick=function(){$("auth").style.display="none"};
 function sha(t){
   if(window.crypto&&crypto.subtle&&window.TextEncoder){
     return crypto.subtle.digest("SHA-256",new TextEncoder().encode("mrd:"+t)).then(function(h){
@@ -404,19 +427,14 @@ function setMode(m){
   $("aok").textContent=m==="up"?"إنشاء الحساب":"دخول";aerr("");
 }
 function enter(u){
-  me=u;lsSet("mrd_session",u.phone);
-  try{orders=JSON.parse(lsGet("mrd_orders_"+u.phone)||"[]")}catch(e){orders=[]}
-  $("auth").style.display="none";
-  $("hi").innerHTML="";
-  var sp=document.createElement("span");sp.textContent="أهلاً "+u.name+" · ";
-  var bt=document.createElement("button");bt.className="out";bt.type="button";bt.textContent="خروج";bt.onclick=logout;
-  $("hi").appendChild(sp);$("hi").appendChild(bt);
-  showServices();
+  me=u;lsSet("mrd_session",u.phone);loadOrders();
+  $("auth").style.display="none";$("apass").value="";
+  renderAccount();showServices();
 }
 function logout(){
-  me=null;orders=[];lsSet("mrd_session","");
+  me=null;lsSet("mrd_session","");loadOrders();
   $("aname").value="";$("apass").value="";
-  $("auth").style.display="flex";setMode("in");
+  $("auth").style.display="none";renderAccount();showServices();
 }
 $("mIn").onclick=function(){setMode("in")};
 $("mUp").onclick=function(){setMode("up")};
@@ -442,9 +460,9 @@ function startAuth(){
   $("fab").href="https://wa.me/"+WHATSAPP;
   $("fab").onclick=function(){$("fab").href="https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent("مرحباً M.R.D"+(me?"\nالاسم: "+me.name+"\nرقمي: "+me.phone:"")+"\nعندي استفسار")};
   $("alogo").src=document.querySelector("header .logoimg").src;
-  $("auth").style.display="flex";
+  $("auth").style.display="none";
   var sess=lsGet("mrd_session"),u=sess?users().filter(function(x){return x.phone===sess})[0]:null;
-  if(u){enter(u)}else{setMode(users().length?"in":"up")}
+  if(u){enter(u)}else{loadOrders();renderAccount();showServices();setMode(users().length?"in":"up")}
 }
 
 function chips(){
@@ -738,6 +756,7 @@ function showSplash(){
   setTimeout(function(){sp.classList.add("hide");setTimeout(function(){closeOv(sp)},550)},reduce?500:2000);
 }
 function openWheel(){
+  if(!me){openAuth();aerr("عجلة الحظ محتاجة حساب لحفظ محاولتك اليومية. تصفح الأسعار والطلب مش محتاجين حساب.");return}
   var o=document.createElement("div");o.className="ov";
   var b=document.createElement("div");b.className="ovbox";
   var h=document.createElement("h3");h.textContent="عجلة الحظ";
@@ -872,6 +891,7 @@ function showOrders(){
   var m=$("main");
   if(!orders.length){m.innerHTML="<div class='empty'>مفيش طلبات لسه. اختار خدمة وابدأ أول طلب.</div>";return}
   m.innerHTML="";
+  var note=document.createElement("p");note.className="note";note.textContent="الطلبات دي محفوظة على المتصفح ده بس"+(me?" لحسابك.":" كزائر. دخول حسابك بيعرض طلبات الحساب.");m.appendChild(note);
   orders.slice().reverse().forEach(function(o){
     var d=document.createElement("div");d.className="order";
     d.innerHTML="<div class='top'><span></span><span class='st'>تم تجهيزه على واتساب</span></div><div>"+(o.u?o.u:"الكمية: "+fmt(o.q))+" · "+fmt(o.t)+" "+CURRENCY+"</div><div class='meta'></div>";
@@ -883,6 +903,9 @@ function showOrders(){
 function calc(){if(sel.fix)return sel.p;return (parseInt($("qty").value,10)||0)/1000*sel.p}
 function validate(){
   var q=parseInt($("qty").value,10)||0,l=$("link").value.trim();
+  if($("oname").value.trim().length<2){$("err").textContent="اكتب اسمك عشان نعرف نتابع طلبك";$("oname").focus();return false}
+  var phone=digits($("ophone").value);
+  if(phone.length<10||phone.length>15){$("err").textContent="اكتب رقم واتساب صحيح";$("ophone").focus();return false}
   if(sel.needemail&&!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test($("email").value.trim())){$("err").textContent="اكتب الإيميل بشكل صحيح";return false}
   if(!sel.nolink&&!/^https?:\/\/.{4,}/i.test(l)){$("err").textContent="حط الرابط كامل يبدأ بـ https://";return false}
   if(!sel.fix&&(q<sel.min||q>sel.max)){$("err").textContent="الكمية لازم تكون بين "+fmt(sel.min)+" و"+fmt(sel.max);return false}
@@ -890,7 +913,7 @@ function validate(){
 }
 function waLink(){
   var q=parseInt($("qty").value,10)||0;
-  var txt="طلب جديد من M.R.D\nالاسم: "+(me?me.name:"")+"\nرقم العميل: "+(me?me.phone:"")+"\nالمنصة: "+curP+"\nالخدمة: "+sel.n+(sel.t?"\nمدة التنفيذ: "+sel.t:"")+(sel.fix?"\n"+(sel.old?"الكمية: ":"المدة: ")+sel.u:"\nالكمية: "+q)+(sel.old?"\nعرض عجلة الحظ (بدل "+sel.old+" "+CURRENCY+")":"")+(sel.needemail?"\nالإيميل: "+$("email").value.trim():"")+(sel.nolink?"":"\nالرابط: "+$("link").value.trim())+"\nالإجمالي: "+calc()+" "+CURRENCY;
+  var txt="طلب جديد من M.R.D\nالاسم: "+$("oname").value.trim()+"\nرقم العميل: "+digits($("ophone").value)+"\nالمنصة: "+curP+"\nالخدمة: "+sel.n+(sel.t?"\nمدة التنفيذ: "+sel.t:"")+(sel.fix?"\n"+(sel.old?"الكمية: ":"المدة: ")+sel.u:"\nالكمية: "+q)+(sel.old?"\nعرض عجلة الحظ (بدل "+sel.old+" "+CURRENCY+")":"")+(sel.needemail?"\nالإيميل: "+$("email").value.trim():"")+(sel.nolink?"":"\nالرابط: "+$("link").value.trim())+"\nالإجمالي: "+calc()+" "+CURRENCY;
   return "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(txt);
 }
 function upd(){
@@ -901,6 +924,7 @@ function openSheet(s){
   sel=s;$("st").textContent=curP+" - "+s.n;
   $("ss").textContent=s.fix?(fmt(s.p)+" "+CURRENCY+" · "+s.u):fmt(s.p)+" "+CURRENCY+" لكل 1000 · من "+fmt(s.min)+" إلى "+fmt(s.max)+(s.t?" · مدة التنفيذ: "+s.t:"");
   $("qty").value=s.min>=1000?s.min:1000>s.max?s.max:Math.max(s.min,1000);
+  $("oname").value=me?me.name:guestContact.name;$("ophone").value=me?me.phone:guestContact.phone;
   $("link").value="";$("err").textContent="";upd();
   var fx=!!s.fix;$("qty").style.display=fx?"none":"block";$("ql").style.display=fx?"none":"block";
   $("email").value="";$("email").style.display=s.needemail?"block":"none";$("el").style.display=s.needemail?"block":"none";
@@ -910,10 +934,10 @@ function openSheet(s){
 function closeSheet(){$("bg").classList.remove("open")}
 $("close").onclick=closeSheet;
 $("bg").onclick=function(e){if(e.target===$("bg"))closeSheet()};
-$("qty").oninput=upd;$("link").oninput=upd;
-$("wa").onclick=function(e){if(!validate()){e.preventDefault()}else{upd();var amt=calc();orders.push({p:curP,n:sel.n,q:sel.fix?1:parseInt($("qty").value,10),u:sel.fix?sel.u:"",t:amt,l:sel.needemail?$("email").value.trim():$("link").value.trim()});save();setTimeout(function(){closeSheet();celebrate("تم تجهيز طلبك. كمّل إرسال الرسالة على واتساب، وبعدها حوّل المبلغ من صفحة الدفع.",function(){showPay(amt)})},700)}};
+$("qty").oninput=upd;$("link").oninput=upd;$("email").oninput=upd;$("oname").oninput=upd;$("ophone").oninput=upd;
+$("wa").onclick=function(e){if(!validate()){e.preventDefault()}else{guestContact={name:$("oname").value.trim(),phone:digits($("ophone").value)};upd();var amt=calc();orders.push({p:curP,n:sel.n,q:sel.fix?1:parseInt($("qty").value,10),u:sel.fix?sel.u:"",t:amt,l:sel.needemail?$("email").value.trim():$("link").value.trim()});save();setTimeout(function(){closeSheet();celebrate("تم تجهيز طلبك. كمّل إرسال الرسالة على واتساب، وبعدها حوّل المبلغ من صفحة الدفع.",function(){showPay(amt)})},700)}};
 $("tabS").onclick=showServices;$("tabO").onclick=showOrders;$("tabP").onclick=function(){showPay()};$("tabI").onclick=showInfo;
-document.addEventListener("keydown",function(e){if(e.key==="Escape")closeSheet()});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"){closeSheet();$("auth").style.display="none"}});
 startAuth();
 </script>
 </body>
